@@ -108,17 +108,17 @@ cartPrice();
 
 // Déclarations Regex et localistations messages d'erreur
 
-const regexName = //^[a-zA-ZÀ-ÿ]*$/;   /^[A-Za-zàâäéèêëïîôöùûüç]+([-']{1}[A-Za-zàâäéèêëïîôöùûüç]+)*$/g;
+const regexName = /^[A-Za-zàâäéèêëïîôöùûüç]+([-']{1}[A-Za-zàâäéèêëïîôöùûüç]+)*$/g;
 const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
 
 const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
 
-const regexAddress = //^[0-9]{1,4}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/ ; /^[0-9]+[ ]?[A-Za-zàâäéèêëïîôöùûüç'-]+([ ]?[A-Za-zàâäéèêëïîôöùûüç '-]+)+$/g;
+const regexAddress = /^[0-9]{1,4}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/ ;
 const addressErrorMsg = document.getElementById("addressErrorMsg");
 
 const cityErrorMsg = document.getElementById("cityErrorMsg");
 
-const regexEmail = //^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z]{2,4})+$/ ; /[A-Za-z0-9_'~-]+(?:\.[A-Za-z0-9_'~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[a-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?/g;
+const regexEmail = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z]{2,4})+$/ ;
 const emailErrorMsg = document.getElementById("emailErrorMsg");
 
 
@@ -168,7 +168,38 @@ document.getElementById("email").addEventListener('change', () => {
 })
 
 
-order // tout les champs required
 
 let form = document.querySelector('.cart__order__form')
-.addEventListener('submit', (event) => {} ;
+.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if(firstNameErrorMsg.innerHTML.length == 0 && document.getElementById("firstName").value.trim().length > 0 
+    && lastNameErrorMsg.innerHTML.length == 0 && document.getElementById("lastName").value.trim().length > 0 
+    && addressErrorMsg.innerHTML.length == 0 && document.getElementById("address").value.trim().length > 0 
+    && cityErrorMsg.innerHTML.length == 0 && document.getElementById("city").value.trim().length > 0 
+    && emailErrorMsg.innerHTML.length == 0 && document.getElementById("email").value.trim().length > 0 ) {
+        const order = {
+            contact: {
+                firstName: document.getElementById("firstName").value,
+                lastName: document.getElementById("lastName").value,
+                address: document.getElementById("address").value,
+                city: document.getElementById("city").value,
+                email: document.getElementById("email").value,
+            },
+            products: getCart().map((item) => item.id)
+        }
+        const headers = new Headers()
+        headers.append("Content-type", "application/json")
+        const reqInit = {
+            headers,
+            method: "POST", 
+            body: JSON.stringify(order)
+        }
+        fetch("http://localhost:3000/api/products/order/", reqInit)
+        .then(function (response) {
+            return response.json(); 
+        })
+        .then( function (info) {
+          document.location.href = "./confirmation.html?orderId="+ info.orderId
+        })
+    }
+})
