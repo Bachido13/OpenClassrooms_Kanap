@@ -1,3 +1,7 @@
+/*------------------------------------------------PANIER--------------------------------------------------------*/
+
+// Récupération du localStorage
+
 const getCart = () => { //on appaelle notre objet de la page product
     const cart = localStorage.cartKanapRambach; // avec la clé localStorage
     if (cart === null) { // si l'objet est vide 
@@ -6,15 +10,18 @@ const getCart = () => { //on appaelle notre objet de la page product
         return JSON.parse(cart); // sinon on formate le JSON en JS
     }
 }
-console.log(getCart())
 
-const initCart = () => { // on appelle la fonction pour afficher notre panier 
+
+// Initialisation du Panier
+
+const initCart = () => { 
     const cart = getCart();
     const cart__items = document.getElementById("cart__items");
     if (cart.length === 0) {
         alert("Votre panier est vide");
     }else {
-        for (let i = 0; i < cart.length; i++) { //boucle "for" pour implémenter le code à ajouter pour le détail du panier
+        // Affichage des Produits du Panier
+        for (let i = 0; i < cart.length; i++) {
             const product = cart[i];
             const innerHtml = `<article class="cart__item" data-id=${product.id} data-color=${product.color}>
                             <div class="cart__item__img">
@@ -37,16 +44,20 @@ const initCart = () => { // on appelle la fonction pour afficher notre panier
                                 </div>
                             </div>
                         </article>`;
-            cart__items.insertAdjacentHTML("beforeend", innerHtml) ;  //on ajoute le innerHtml au cart__Items 
+            cart__items.insertAdjacentHTML("beforeend", innerHtml) ; 
         }
     }
+
+
+    // Modification de la quantité du Produit
+
     document.querySelectorAll(".itemQuantity").forEach ((itemQuantity) => {
-        itemQuantity.addEventListener(`change`, function(e) {
-            const parent = this.parentNode.parentNode.parentNode.parentNode; // on remonte au parent 'article' de 'deleteItem'
+        itemQuantity.addEventListener(`change`, () => {
+            const parent = this.parentNode.parentNode.parentNode.parentNode;
             const {id, color} = parent.dataset;
             let index = cart.findIndex((cartItem) => cartItem.id == id && cartItem.color == color);
             cart[index].quantity = parseInt(event.target.value);
-            if (cart[index].quantity <= 0 || cart[index].quantity > 100) { // Si quantité <=0 ou <100, message d'erreur
+            if (cart[index].quantity <= 0 || cart[index].quantity > 100) {
                 alert("Veuillez choisir une quantité entre 1 et 100 !");
             } else {
                 console.log(cart[index].quantity);
@@ -55,10 +66,14 @@ const initCart = () => { // on appelle la fonction pour afficher notre panier
             } 
         })
     })
-    document.querySelectorAll(".deleteItem").forEach ((deleteItemP)=> { //pour chaque 'deleteItem' on crée un paramètre 'deleteItemP' que l'on écoute
-        deleteItemP.addEventListener('click', function(e) {
-            const parent = this.parentNode.parentNode.parentNode.parentNode; // on remonte au parent 'article' de 'deleteItem'
-            const {id, color} = parent.dataset; // on crée 2 constantes id et color qui correspondent aux datas dans le cart
+
+
+    // Suppression de l'article du Panier
+
+    document.querySelectorAll(".deleteItem").forEach ((deleteItemP)=> { 
+        deleteItemP.addEventListener('click', () => {
+            const parent = this.parentNode.parentNode.parentNode.parentNode; 
+            const {id, color} = parent.dataset; 
             let index = cart.findIndex((cartItem) => cartItem.id == id && cartItem.color == color); 
             cart.splice(index, 1);
             localStorage.cartKanapRambach = JSON.stringify(cart);
@@ -67,6 +82,9 @@ const initCart = () => { // on appelle la fonction pour afficher notre panier
     }) 
 }
 initCart();
+
+
+// Calcul du Prix du Panier et du nombre d'articles
 
 const cartPrice = () => {    
     const cart = getCart();
@@ -83,6 +101,74 @@ const cartPrice = () => {
     quantityInner.innerHTML = totalQuantity;
     priceInner.innerHTML = totalPrice ; 
 }
-
 cartPrice();
 
+
+/*--------------------------------------------FORMULAIRE--------------------------------------------*/ 
+
+// Déclarations Regex et localistations messages d'erreur
+
+const regexName = //^[a-zA-ZÀ-ÿ]*$/;   /^[A-Za-zàâäéèêëïîôöùûüç]+([-']{1}[A-Za-zàâäéèêëïîôöùûüç]+)*$/g;
+const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
+
+const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
+
+const regexAddress = //^[0-9]{1,4}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/ ; /^[0-9]+[ ]?[A-Za-zàâäéèêëïîôöùûüç'-]+([ ]?[A-Za-zàâäéèêëïîôöùûüç '-]+)+$/g;
+const addressErrorMsg = document.getElementById("addressErrorMsg");
+
+const cityErrorMsg = document.getElementById("cityErrorMsg");
+
+const regexEmail = //^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z]{2,4})+$/ ; /[A-Za-z0-9_'~-]+(?:\.[A-Za-z0-9_'~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[a-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?/g;
+const emailErrorMsg = document.getElementById("emailErrorMsg");
+
+
+// Ecoute de l'input firstname
+document.getElementById("firstName").addEventListener('change', () => {
+    if (regexName.test(firstName.value)) {
+        firstNameErrorMsg.innerHTML = "";
+    } else {
+        firstNameErrorMsg.innerHTML = "Veuillez entrer un prénom avec les bons caractères."
+    }
+})
+
+// Ecoute de l'input lastname
+document.getElementById("lastName").addEventListener('change', () => {
+    if (regexName.test(lastName.value)) {
+        lastNameErrorMsg.innerHTML = "";
+    } else {
+        lastNameErrorMsg.innerHTML = "Veuillez entrer un nom avec les bons caractères."
+    }
+})
+
+// Ecoute de l'input address
+document.getElementById("address").addEventListener('change', () => {
+    if (regexAddress.test(address.value)) {
+        addressErrorMsg.innerHTML = "";
+    } else {
+        addressErrorMsg.innerHTML = "Veuillez entrer une adresse avec les bons caractères."
+    }
+})
+
+// Ecoute de l'input city
+document.getElementById("city").addEventListener('change', () => {
+    if (regexName.test(city.value)) {
+        cityErrorMsg.innerHTML = "";
+    } else {
+        cityErrorMsg.innerHTML = "Veuillez entrer une ville avec les bons caractères."
+    }
+})
+
+// Ecoute de l'input email
+document.getElementById("email").addEventListener('change', () => {
+    if (regexEmail.test(email.value)) {
+        emailErrorMsg.innerHTML = "";
+    } else {
+        emailErrorMsg.innerHTML = "Veuillez entrer un email avec les bons caractères."
+    }
+})
+
+
+order // tout les champs required
+
+let form = document.querySelector('.cart__order__form')
+.addEventListener('submit', (event) => {} ;
