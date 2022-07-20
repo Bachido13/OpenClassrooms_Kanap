@@ -108,7 +108,7 @@ cartPrice();
 
 // Déclarations Regex et localistations messages d'erreur
 
-const regexName = /^[A-Za-zàâäéèêëïîôöùûüç]+([-']{1}[A-Za-zàâäéèêëïîôöùûüç]+)*$/g;
+const regexName = /[A-Za-zàâäéèêëïîôöùûüç\-\']/g;
 const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
 
 const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
@@ -187,19 +187,23 @@ let form = document.querySelector('.cart__order__form')
             },
             products: getCart().map((item) => item.id)
         }
-        const headers = new Headers()
-        headers.append("Content-type", "application/json")
+        console.log(order);
+        const headers = new Headers();
+        headers.append("Content-type", "application/json");
+
         const reqInit = {
             headers,
             method: "POST", 
             body: JSON.stringify(order)
-        }
+        };
+
         fetch("http://localhost:3000/api/products/order/", reqInit)
         .then(function (response) {
             return response.json(); 
         })
         .then( function (info) {
-          document.location.href = "./confirmation.html?orderId="+ info.orderId
+            document.location.href = "./confirmation.html?orderId="+ info.orderId;
+            localStorage.clear();
         })
     }
 })
