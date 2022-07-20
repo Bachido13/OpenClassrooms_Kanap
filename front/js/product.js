@@ -7,7 +7,7 @@ fetch ("http://localhost:3000/api/products/" + productId)  //Demande de requête
 .then(function (response) {
     return response.json(); //return de la réponse (Booléen)
 })
-.then( function (kanap_) {  //récupération de la réponse
+.then(function (kanap_) {  //récupération de la réponse
     console.log(kanap_);// affichage des données dans la console
     kanap = kanap_; 
     const kanapImg = document.querySelector(".item__img"); // place HTML où l'on implémentera notre JS (image) [indiquer la class ou l'id pour etre plus précis]

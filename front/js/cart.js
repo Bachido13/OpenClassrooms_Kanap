@@ -52,7 +52,7 @@ const initCart = () => {
     // Modification de la quantité du Produit
 
     document.querySelectorAll(".itemQuantity").forEach ((itemQuantity) => {
-        itemQuantity.addEventListener(`change`, () => {
+        itemQuantity.addEventListener(`change`, function () {
             const parent = this.parentNode.parentNode.parentNode.parentNode;
             const {id, color} = parent.dataset;
             let index = cart.findIndex((cartItem) => cartItem.id == id && cartItem.color == color);
@@ -71,13 +71,14 @@ const initCart = () => {
     // Suppression de l'article du Panier
 
     document.querySelectorAll(".deleteItem").forEach ((deleteItemP)=> { 
-        deleteItemP.addEventListener('click', () => {
+        deleteItemP.addEventListener('click', function () {
             const parent = this.parentNode.parentNode.parentNode.parentNode; 
             const {id, color} = parent.dataset; 
             let index = cart.findIndex((cartItem) => cartItem.id == id && cartItem.color == color); 
             cart.splice(index, 1);
             localStorage.cartKanapRambach = JSON.stringify(cart);
             parent.remove();
+            location.href = "cart.html";
         })
     }) 
 }
