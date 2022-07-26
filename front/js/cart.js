@@ -1,5 +1,32 @@
 /*------------------------------------------------PANIER--------------------------------------------------------*/
 
+const getOneProduct = (item) => {
+    return new Promise((resolve, reject) => {
+        fetch("http://localhost:3000/api/products/" + item.id)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (kanap_) {
+                resolve({...kanap_, quantity: item.quantity, color: item.color});
+            })
+            .catch(function(error) {
+                reject(error)
+            })
+    })
+}
+
+const getAllProductToInitCart = () => {
+    const cartBefore = getCart();
+    const promises = [];
+    cartBefore.forEach(item => {
+        promises.push(getOneProduct(item))
+    })
+    Promise.all(promises)
+    .then(cart => {
+        console.log(cart);
+        initCart(cart)
+    })
+} 
 // Récupération du localStorage
 
 const getCart = () => { //on appaelle notre objet de la page product
@@ -11,15 +38,14 @@ const getCart = () => { //on appaelle notre objet de la page product
     }
 }
 
-
 // Initialisation du Panier
 
-const initCart = () => { 
-    const cart = getCart();
+const initCart = (cart) => {
+    
     const cart__items = document.getElementById("cart__items");
     if (cart.length === 0) {
         alert("Votre panier est vide");
-    }else {
+    } else {
         // Affichage des Produits du Panier
         for (let i = 0; i < cart.length; i++) {
             const product = cart[i];
@@ -44,17 +70,17 @@ const initCart = () => {
                                 </div>
                             </div>
                         </article>`;
-            cart__items.insertAdjacentHTML("beforeend", innerHtml) ; 
+            cart__items.insertAdjacentHTML("beforeend", innerHtml);
         }
     }
 
 
     // Modification de la quantité du Produit
 
-    document.querySelectorAll(".itemQuantity").forEach ((itemQuantity) => {
+    document.querySelectorAll(".itemQuantity").forEach((itemQuantity) => {
         itemQuantity.addEventListener(`change`, function () {
             const parent = this.parentNode.parentNode.parentNode.parentNode;
-            const {id, color} = parent.dataset;
+            const { id, color } = parent.dataset;
             let index = cart.findIndex((cartItem) => cartItem.id == id && cartItem.color == color);
             cart[index].quantity = parseInt(event.target.value);
             if (cart[index].quantity <= 0 || cart[index].quantity > 100) {
@@ -62,31 +88,31 @@ const initCart = () => {
             } else {
                 localStorage.cartKanapRambach = JSON.stringify(cart);
                 location.href = "cart.html";
-            } 
+            }
         })
     })
 
 
     // Suppression de l'article du Panier
 
-    document.querySelectorAll(".deleteItem").forEach ((deleteItemP)=> { 
+    document.querySelectorAll(".deleteItem").forEach((deleteItemP) => {
         deleteItemP.addEventListener('click', function () {
-            const parent = this.parentNode.parentNode.parentNode.parentNode; 
-            const {id, color} = parent.dataset; 
-            let index = cart.findIndex((cartItem) => cartItem.id == id && cartItem.color == color); 
+            const parent = this.parentNode.parentNode.parentNode.parentNode;
+            const { id, color } = parent.dataset;
+            let index = cart.findIndex((cartItem) => cartItem.id == id && cartItem.color == color);
             cart.splice(index, 1);
             localStorage.cartKanapRambach = JSON.stringify(cart);
             parent.remove();
             location.href = "cart.html";
         })
-    }) 
+    })
 }
-initCart();
+getAllProductToInitCart();
 
 
 // Calcul du Prix du Panier et du nombre d'articles
 
-const cartPrice = () => {    
+const cartPrice = () => {
     const cart = getCart();
     let totalPrice = 0;
     let totalQuantity = 0;
@@ -99,12 +125,12 @@ const cartPrice = () => {
         totalPrice += prixDuProduit;
     }
     quantityInner.innerHTML = totalQuantity;
-    priceInner.innerHTML = totalPrice ; 
+    priceInner.innerHTML = totalPrice;
 }
 cartPrice();
 
 
-/*--------------------------------------------FORMULAIRE--------------------------------------------*/ 
+/*--------------------------------------------FORMULAIRE--------------------------------------------*/
 
 // Déclarations Regex et localistations messages d'erreur
 
@@ -113,12 +139,12 @@ const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
 
 const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
 
-const regexAddress = /^[0-9]{1,4}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/ ;
+const regexAddress = /^[0-9]{1,4}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/;
 const addressErrorMsg = document.getElementById("addressErrorMsg");
 
 const cityErrorMsg = document.getElementById("cityErrorMsg");
 
-const regexEmail = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z]{2,4})+$/ ;
+const regexEmail = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z]{2,4})+$/;
 const emailErrorMsg = document.getElementById("emailErrorMsg");
 
 
@@ -170,39 +196,39 @@ document.getElementById("email").addEventListener('change', () => {
 
 
 let form = document.querySelector('.cart__order__form')
-.addEventListener('submit', (event) => {
-    event.preventDefault();
-    if(firstNameErrorMsg.innerHTML.length == 0 && document.getElementById("firstName").value.trim().length > 0 
-    && lastNameErrorMsg.innerHTML.length == 0 && document.getElementById("lastName").value.trim().length > 0 
-    && addressErrorMsg.innerHTML.length == 0 && document.getElementById("address").value.trim().length > 0 
-    && cityErrorMsg.innerHTML.length == 0 && document.getElementById("city").value.trim().length > 0 
-    && emailErrorMsg.innerHTML.length == 0 && document.getElementById("email").value.trim().length > 0 ) {
-        const order = {
-            contact: {
-                firstName: document.getElementById("firstName").value,
-                lastName: document.getElementById("lastName").value,
-                address: document.getElementById("address").value,
-                city: document.getElementById("city").value,
-                email: document.getElementById("email").value,
-            },
-            products: getCart().map((item) => item.id)
+    .addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (firstNameErrorMsg.innerHTML.length == 0 && document.getElementById("firstName").value.trim().length > 0
+            && lastNameErrorMsg.innerHTML.length == 0 && document.getElementById("lastName").value.trim().length > 0
+            && addressErrorMsg.innerHTML.length == 0 && document.getElementById("address").value.trim().length > 0
+            && cityErrorMsg.innerHTML.length == 0 && document.getElementById("city").value.trim().length > 0
+            && emailErrorMsg.innerHTML.length == 0 && document.getElementById("email").value.trim().length > 0) {
+            const order = {
+                contact: {
+                    firstName: document.getElementById("firstName").value,
+                    lastName: document.getElementById("lastName").value,
+                    address: document.getElementById("address").value,
+                    city: document.getElementById("city").value,
+                    email: document.getElementById("email").value,
+                },
+                products: getCart().map((item) => item.id)
+            }
+            const headers = new Headers();
+            headers.append("Content-type", "application/json");
+
+            const reqInit = {
+                headers,
+                method: "POST",
+                body: JSON.stringify(order)
+            };
+
+            fetch("http://localhost:3000/api/products/order/", reqInit)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (info) {
+                    localStorage.removeItem("cartKanapRambach");
+                    document.location.href = "./confirmation.html?orderId=" + info.orderId;
+                })
         }
-        const headers = new Headers();
-        headers.append("Content-type", "application/json");
-
-        const reqInit = {
-            headers,
-            method: "POST", 
-            body: JSON.stringify(order)
-        };
-
-        fetch("http://localhost:3000/api/products/order/", reqInit)
-        .then(function (response) {
-            return response.json(); 
-        })
-        .then( function (info) {
-            document.location.href = "./confirmation.html?orderId="+ info.orderId;
-            localStorage.clear();
-        })
-    }
-})
+    })

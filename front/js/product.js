@@ -1,3 +1,5 @@
+//--------------------------AFFICHAGE DU PRODUIT------------------------------------\\
+
 let urlparams = document.location.search; // recupération du produit selectionné dans l'index
 let urlsearchParams = new URLSearchParams(urlparams) ;
 let productId = urlsearchParams.get("id") ; //récuperation de l'id du produit
