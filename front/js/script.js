@@ -3,7 +3,6 @@ fetch ("http://localhost:3000/api/products") //Demande de requête (fetch) à l'
     return response.json(); //return de la réponse (Booléen)
 })
 .then(function (kanaps) {  //récupération de la réponse
-    console.log(kanaps) // affichage des données dans la console
     const kanapsSection = document.getElementById("items"); // "items" = class de la section où l'on insère nos kanaps (réponse)
     let innerHtml = "";
     for (let i = 0; i < kanaps.length; i++) {  //boucle "for" pour implémenter chaque kanap

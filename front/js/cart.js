@@ -60,7 +60,6 @@ const initCart = () => {
             if (cart[index].quantity <= 0 || cart[index].quantity > 100) {
                 alert("Veuillez choisir une quantité entre 1 et 100 !");
             } else {
-                console.log(cart[index].quantity);
                 localStorage.cartKanapRambach = JSON.stringify(cart);
                 location.href = "cart.html";
             } 
@@ -188,7 +187,6 @@ let form = document.querySelector('.cart__order__form')
             },
             products: getCart().map((item) => item.id)
         }
-        console.log(order);
         const headers = new Headers();
         headers.append("Content-type", "application/json");
 

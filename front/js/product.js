@@ -31,7 +31,10 @@ fetch ("http://localhost:3000/api/products/" + productId)  //Demande de requête
     console.log(error)
 })
 
-const addToCart = () => { // fonction pour ajouter le produit au panier
+
+//Ajout du produit au panier
+
+const addToCart = () => {
     const dataStore = localStorage.cartKanapRambach; //déclaration de la clé dans localstorage
     let cart = []; //tableau vide pour enregistrer nos porduits pour le panier
     if (dataStore) { //formatage du JSON vers JavaScript
@@ -56,7 +59,7 @@ const addToCart = () => { // fonction pour ajouter le produit au panier
         addToCart.quantity = document.querySelector("#quantity").value;
     }  
     localStorage.cartKanapRambach = JSON.stringify(cart) // formatage du localstorage (en JavaScript) au format JSON
-    location.href = urlparams;
+    document.getElementById("addToCart").innerHTML = "Produit ajouté à votre panier"
 };
 
 document.querySelector("#addToCart").addEventListener("click", addToCart); //détecteur au clic sur le bouton "ajouter au panier"
