@@ -206,7 +206,6 @@ const formHandler = () => {
         }
     });
 
-
     let form = document.querySelector('.cart__order__form')
         .addEventListener('submit', (event) => {
             event.preventDefault();

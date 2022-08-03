@@ -26,7 +26,6 @@ fetch("http://localhost:3000/api/products/" + productId) //Demande de requête (
             innerHtml += `<option value="${color}">${color}</option>`;
         }
         kanapOption.innerHTML = innerHtml; // l'espace vide dans la section est remplacé par notre "let innerHTML" avec toutes les options
-
     })
     .catch(function (error) { // s'il y a une erreur lors de l'exectution de notre script, "error" s'affiche dans la console
         console.log(error)
@@ -37,6 +36,7 @@ fetch("http://localhost:3000/api/products/" + productId) //Demande de requête (
 
 const addToCart = () => {
     const dataStore = localStorage.cartKanapRambach; //déclaration de la clé dans localstorage
+    let productQuantity = document.querySelector("#quantity").value;
     let cart = []; //tableau vide pour enregistrer nos porduits pour le panier
     if (dataStore) { //formatage du JSON vers JavaScript
         cart = JSON.parse(dataStore);
@@ -44,10 +44,12 @@ const addToCart = () => {
     const existingProductIndex = cart.findIndex((product) => {
         return product.id === productId && product.color === document.querySelector("#colors").value;
     })
-    if (existingProductIndex === -1) {
+    if (productQuantity == 0 || productQuantity >= 100) {
+        alert("Veuillez choisir une quantité comprise entre 1 et 100 !");
+    } else if (existingProductIndex === -1) {
         cart.push({ //ajout de l'objet produit avec ses 3 informations
             id: productId,
-            quantity: document.querySelector("#quantity").value,
+            quantity: productQuantity,
             color: document.querySelector("#colors").value,
             // price: kanap.price,
             // name: kanap.name,
@@ -57,7 +59,11 @@ const addToCart = () => {
     } else {
         for (let i = 0; i < cart.length; i++) {
             if (cart[i].color === document.querySelector("#colors").value && cart[i].id === productId) {
-                cart[i].quantity = Number.parseInt(cart[i].quantity) + Number.parseInt(document.querySelector("#quantity").value);
+                if (Number.parseInt(cart[i].quantity) + Number.parseInt(productQuantity) >= 100) {
+                    alert("Vous avez dépassé la quantité maximale de 100 produits !");
+                } else {       
+                    cart[i].quantity = Number.parseInt(cart[i].quantity) + Number.parseInt(productQuantity);
+                }
             }
         }
     }
